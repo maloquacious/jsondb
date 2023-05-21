@@ -17,7 +17,7 @@ Add `import "github.com/maloquacious/jsondb"` to your file.
 ```go
 // a new driver, providing the directory where it will be writing to,
 // and a qualified logger if desired
-db, err := scribble.New(dir)
+db, err := jsondb.New(dir)
 if err != nil && !errors.Is(err, jsondb.ErrExists){
   fmt.Println("Error", err)
 }

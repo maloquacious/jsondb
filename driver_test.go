@@ -169,7 +169,7 @@ func TestDeleteall(t *testing.T) {
 	_ = destroySchool()
 }
 
-// create a new scribble database
+// create a new database
 func createDB() error {
 	var err error
 	if db, err = jsondb.New(database); err != nil {
