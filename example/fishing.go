@@ -1,9 +1,12 @@
+// jsondb - a tiny JSON database
+// Copyright (c) 2019, 2023 Steve Domino, Michael D Henderson
+
 package main
 
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/sdomino/scribble"
+	"github.com/maloquacious/jsondb"
 )
 
 // a fish
@@ -13,7 +16,7 @@ func main() {
 
 	dir := "./"
 
-	db, err := scribble.New(dir, nil)
+	db, err := jsondb.New(dir, nil)
 	if err != nil {
 		fmt.Println("Error", err)
 	}

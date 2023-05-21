@@ -1,19 +1,24 @@
-Scribble [![GoDoc](https://godoc.org/github.com/boltdb/bolt?status.svg)](http://godoc.org/github.com/sdomino/scribble) [![Go Report Card](https://goreportcard.com/badge/github.com/sdomino/scribble)](https://goreportcard.com/report/github.com/sdomino/scribble)
---------
+# jsondb
+[![GoDoc](https://godoc.org/github.com/boltdb/bolt?status.svg)](http://godoc.org/github.com/maloquacious/jsondb)
+[![Go Report Card](https://goreportcard.com/badge/github.com/maloquacious/jsondb)](https://goreportcard.com/report/github.com/maloquacious/jsondb)
 
-A tiny JSON database in Golang
+A tiny JSON database in Golang.
 
-### Installation
+Forked from [Steve Domino](https://github.com/sdomino)'s [Scribble](https://github.com/sdomino/scribble).
 
-Install using `go get github.com/sdomino/scribble`.
+I changed the name of the package because some of my changes are incompatible with the original source.
 
-### Usage
+## Installation
+
+Add `import "github.com/maloquacious/jsondb"` to your file.
+
+## Usage
 
 ```go
-// a new scribble driver, providing the directory where it will be writing to,
+// a new driver, providing the directory where it will be writing to,
 // and a qualified logger if desired
-db, err := scribble.New(dir, nil)
-if err != nil {
+db, err := scribble.New(dir)
+if err != nil && !errors.Is(err, jsondb.ErrExists){
   fmt.Println("Error", err)
 }
 
@@ -56,10 +61,9 @@ if err := db.Delete("fish", ""); err != nil {
 ```
 
 ## Documentation
-- Complete documentation is available on [godoc](http://godoc.org/github.com/sdomino/scribble).
-- Coverage Report is available on [gocover](https://gocover.io/github.com/sdomino/scribble)
+- Complete documentation is available on [godoc](https://pkg.go.dev/github.com/maloquacious/jsondb).
 
-## Todo/Doing
+## TODO
 - Support for windows
 - Better support for concurrency
 - Better support for sub collections

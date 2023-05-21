@@ -1,19 +1,22 @@
-package scribble
+// jsondb - a tiny JSON database
+// Copyright (c) 2019, 2023 Steve Domino, Michael D Henderson
+
+package jsondb_test
 
 import (
+	"errors"
+	"github.com/maloquacious/jsondb"
 	"os"
 	"testing"
 )
 
-//
 type Fish struct {
 	Type string `json:"type"`
 }
 
-//
 var (
-	db         *Driver
-	database   = "./deep/school"
+	db         *jsondb.DB
+	database   = "testdata/deep/school"
 	collection = "fish"
 	onefish    = Fish{}
 	twofish    = Fish{}
@@ -21,17 +24,16 @@ var (
 	bluefish   = Fish{Type: "blue"}
 )
 
-//
 func TestMain(m *testing.M) {
 
-	// remove any thing for a potentially failed previous test
-	os.RemoveAll("./deep")
+	// remove anything for a potentially failed previous test
+	_ = os.RemoveAll("testdata/deep")
 
 	// run
 	code := m.Run()
 
 	// cleanup
-	os.RemoveAll("./deep")
+	_ = os.RemoveAll("testdata/deep")
 
 	// exit
 	os.Exit(code)
@@ -46,7 +48,9 @@ func TestNew(t *testing.T) {
 	}
 
 	// create a new database
-	createDB()
+	if err := createDB(); err != nil {
+		t.Error("Expected nothing, got %w", err)
+	}
 
 	// database should exist
 	if _, err := os.Stat(database); err != nil {
@@ -54,7 +58,11 @@ func TestNew(t *testing.T) {
 	}
 
 	// should use existing database
-	createDB()
+	if err := createDB(); err == nil {
+		t.Error("Expected ErrExists, got nothing")
+	} else if !errors.Is(err, jsondb.ErrExists) {
+		t.Error("Expected ErrExists, got %w", err)
+	}
 
 	// database should exist
 	if _, err := os.Stat(database); err != nil {
@@ -62,10 +70,9 @@ func TestNew(t *testing.T) {
 	}
 }
 
-//
 func TestWriteAndRead(t *testing.T) {
 
-	createDB()
+	_ = createDB()
 
 	// add fish to database
 	if err := db.Write(collection, "redfish", redfish); err != nil {
@@ -82,14 +89,13 @@ func TestWriteAndRead(t *testing.T) {
 		t.Error("Expected red fish, got: ", onefish.Type)
 	}
 
-	destroySchool()
+	_ = destroySchool()
 }
 
-//
 func TestReadall(t *testing.T) {
 
-	createDB()
-	createSchool()
+	_ = createDB()
+	_ = createSchool()
 
 	fish, err := db.ReadAll(collection)
 	if err != nil {
@@ -100,13 +106,12 @@ func TestReadall(t *testing.T) {
 		t.Error("Expected some fish, have none")
 	}
 
-	destroySchool()
+	_ = destroySchool()
 }
 
-//
 func TestWriteAndReadEmpty(t *testing.T) {
 
-	createDB()
+	_ = createDB()
 
 	// create a fish with no home
 	if err := db.Write("", "redfish", redfish); err == nil {
@@ -123,13 +128,12 @@ func TestWriteAndReadEmpty(t *testing.T) {
 		t.Error("Allowed read of empty resource", err.Error())
 	}
 
-	destroySchool()
+	_ = destroySchool()
 }
 
-//
 func TestDelete(t *testing.T) {
 
-	createDB()
+	_ = createDB()
 
 	// add fish to database
 	if err := db.Write(collection, "redfish", redfish); err != nil {
@@ -146,14 +150,13 @@ func TestDelete(t *testing.T) {
 		t.Error("Expected nothing, got fish")
 	}
 
-	destroySchool()
+	_ = destroySchool()
 }
 
-//
 func TestDeleteall(t *testing.T) {
 
-	createDB()
-	createSchool()
+	_ = createDB()
+	_ = createSchool()
 
 	if err := db.Delete(collection, ""); err != nil {
 		t.Error("Failed to delete: ", err.Error())
@@ -163,18 +166,15 @@ func TestDeleteall(t *testing.T) {
 		t.Error("Expected nothing, have fish")
 	}
 
-	destroySchool()
+	_ = destroySchool()
 }
-
-//
 
 // create a new scribble database
 func createDB() error {
 	var err error
-	if db, err = New(database, nil); err != nil {
+	if db, err = jsondb.New(database); err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -190,7 +190,6 @@ func createSchool() error {
 			return err
 		}
 	}
-
 	return nil
 }
 
